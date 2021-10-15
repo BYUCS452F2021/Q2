@@ -9,7 +9,7 @@ Questions:
 def getUserName(netId):
   # FIXME: Replace this with whatever fancy function Derek comes up with
   name = DBAccess.getUserName(netId)
-  if name == None:
+  if name is None:
     name = "Student"
 
   return name
