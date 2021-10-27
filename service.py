@@ -22,5 +22,5 @@ def get_usersrole(netid, class_id):
     if role is None:
         dbaccess.DBAccess().add_users_role(netid, class_id, "student")
         return "student"
-    
+
     return role
