@@ -26,6 +26,7 @@ def get_usersrole(netid, class_id):
         return "student"
 
     return role
+
 # Add a help instance to the correct queue
 def join_queue(netid, course_id, question):
 
@@ -33,17 +34,17 @@ def join_queue(netid, course_id, question):
     enqueue_time = datetime.now()
 
     # Add to database
-    dbaccess.DBAccess().add_help_instance(course_id, question, enqueue_time)
+    dbaccess.DBAccess().add_help_instance(netid, course_id, question, enqueue_time)
 
 
 # Check whether a student is a TA for a given class
 def verify_is_ta(netid, course_id):
 
     # Get the role
-    user_role = dbaccess.DBAccess.get_users_role(netid, course_id)
+    user_role = dbaccess.DBAccess().get_users_role(netid, course_id)
 
-    # Check that it is "TA"
-    if user_role is not "TA":
+    # Check that it is "ta"
+    if user_role != "ta":
         return False
 
     return True
@@ -54,7 +55,7 @@ def claim_question(question_id, netid, course_id):
     # Verify user is a TA
     if verify_is_ta(netid, course_id):
         # Verify question hasn't already been claimed
-        current_instance = dbaccess.DBAccess.get_help_instance(question_id)
+        current_instance = dbaccess.DBAccess().get_help_instance(question_id)
         if current_instance.ta_netid is None:
             # Get time
             start_help_time = datetime.now()

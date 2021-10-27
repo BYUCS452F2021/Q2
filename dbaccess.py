@@ -15,6 +15,7 @@ class DBAccess:
                " users (netid TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL)")
         self.__con.execute(cmd)
         self.__con.commit()
+
         cmd = ("CREATE TABLE IF NOT EXISTS roles ("
                " netid TEXT NOT NULL,"
                " class_id TEXT NOT NULL,"
@@ -25,7 +26,7 @@ class DBAccess:
 
         cmd = ("CREATE TABLE IF NOT EXISTS"
         " helpInstances (question_id TEXT NOT NULL PRIMARY KEY, student_netid TEXT NOT NULL,"
-        " course_id TEXT NOT NULL, question TEXT NOT NULL, enqueue_time DATEIME NOT NULL,"
+        " course_id TEXT NOT NULL, question TEXT NOT NULL, enqueue_time DATETIME NOT NULL,"
         " dequeue_time DATETIME, start_help_time DATETIME, ta_netid TEXT)")
         self.__con.execute(cmd)
         self.__con.commit()
@@ -66,24 +67,25 @@ class DBAccess:
               " VALUES (:netid, :class_id, :role)")
         res = self.__con.execute(cmd, {'netid': netid, 'class_id': class_id, 'role': role})
         self.__con.commit()
+
     def add_help_instance(self, netid, course_id, question, enqueue_time):
         """Add a help instance to the database."""
         cmd = ("INSERT INTO helpInstances (student_netid, course_id, question, enqueue_time)"
               " VALUES (:student_netid, :course_id, :question, :enqueue_time)")
         res = self.__con.execute(cmd,
-            {'student_netid': netid},
-            {'course_id': course_id},
-            {'question': question},
-            {'enqueue_time': enqueue_time})
+            {'student_netid': netid,
+            'course_id': course_id,
+            'question': question,
+            'enqueue_time': enqueue_time})
         self.__con.commit()
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
-        cmd = ("UPDATE roleInstance"
-            "SET ta_netid = :ta_netid, start_help_time = :time"
-            "WHERE question_id = :question_id")
+        cmd = ("UPDATE helpInstances"
+            " SET ta_netid = :ta_netid, start_help_time = :time"
+            " WHERE question_id = :question_id")
         res = self.__con.execute(cmd,
-            {'ta_netid': ta_netid},
-            {'question_id': question_id},
-            {'time': time})
+            {'ta_netid': ta_netid,
+            'question_id': question_id,
+            'time': time})
         self.__con.commit()
