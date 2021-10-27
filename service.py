@@ -2,6 +2,7 @@ from sqlite3.dbapi2 import DatabaseError
 import dbaccess
 from datetime import datetime
 
+
 # Get a user's name from their netID
 def get_users_name(netid):
     user = dbaccess.DBAccess().get_user(netid)
@@ -12,6 +13,7 @@ def get_users_name(netid):
 
     return name
 
+
 def get_usersrole(netid, class_id):
     role = dbaccess.DBAccess().get_users_role(netid, class_id)
     if role is None:
@@ -20,6 +22,7 @@ def get_usersrole(netid, class_id):
 
     return role
 
+
 # Add a help instance to the correct queue
 def join_queue(netid, course_id, question):
 
@@ -27,7 +30,8 @@ def join_queue(netid, course_id, question):
     enqueue_time = datetime.now()
 
     # Add to database
-    dbaccess.DBAccess().add_help_instance(netid, course_id, question, enqueue_time)
+    dbaccess.DBAccess().add_help_instance(netid, course_id, question,
+                                          enqueue_time)
 
 
 # Check whether a student is a TA for a given class
@@ -42,6 +46,7 @@ def verify_is_ta(netid, course_id):
 
     return True
 
+
 # Claim a question (TA use only)
 def claim_question(question_id, netid, course_id):
 
@@ -54,10 +59,13 @@ def claim_question(question_id, netid, course_id):
             start_help_time = datetime.now()
 
             # Claim question
-            dbaccess.DBAccess.claim_help_instance(question_id, netid, start_help_time)
+            dbaccess.DBAccess.claim_help_instance(question_id, netid,
+                                                  start_help_time)
             return True
 
     return False
+
+
 def get_waiting_questions(netid, course_id):
     """Gets all questions that are not yet being helped
 
@@ -67,7 +75,8 @@ def get_waiting_questions(netid, course_id):
     if not verify_is_ta(netid, course_id):
         return None
 
-    waiting_instances = dbaccess.DBAccess().get_waiting_help_instances(course_id)
+    waiting_instances = dbaccess.DBAccess().get_waiting_help_instances(
+        course_id)
 
     waiting_questions_return_info = []
     for instance in waiting_instances:
@@ -79,6 +88,7 @@ def get_waiting_questions(netid, course_id):
         waiting_questions_return_info.append(info)
 
     return waiting_questions_return_info
+
 
 def end_question(netid, q_id):
     """Records that a question has finished being helped

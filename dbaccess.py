@@ -69,30 +69,38 @@ class DBAccess:
         """Add a user's role for a course to the database."""
 
         cmd = ("INSERT INTO roles (netid, class_id, role)"
-              " VALUES (:netid, :class_id, :role)")
-        res = self.__con.execute(cmd, {'netid': netid, 'class_id': class_id, 'role': role})
+               " VALUES (:netid, :class_id, :role)")
+        res = self.__con.execute(cmd, {
+            'netid': netid,
+            'class_id': class_id,
+            'role': role
+        })
         self.__con.commit()
 
     def add_help_instance(self, netid, course_id, question, enqueue_time):
         """Add a help instance to the database."""
-        cmd = ("INSERT INTO help_instances (student_netid, course_id, question, enqueue_time)"
-              " VALUES (:student_netid, :course_id, :question, :enqueue_time)")
-        res = self.__con.execute(cmd,
-            {'student_netid': netid,
-            'course_id': course_id,
-            'question': question,
-            'enqueue_time': enqueue_time})
+        cmd = (
+            "INSERT INTO help_instances (student_netid, course_id, question, enqueue_time)"
+            " VALUES (:student_netid, :course_id, :question, :enqueue_time)")
+        res = self.__con.execute(
+            cmd, {
+                'student_netid': netid,
+                'course_id': course_id,
+                'question': question,
+                'enqueue_time': enqueue_time
+            })
         self.__con.commit()
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
         cmd = ("UPDATE help_instances"
-            " SET ta_netid = :ta_netid, start_help_time = :time"
-            " WHERE question_id = :question_id")
-        res = self.__con.execute(cmd,
-            {'ta_netid': ta_netid,
+               " SET ta_netid = :ta_netid, start_help_time = :time"
+               " WHERE question_id = :question_id")
+        res = self.__con.execute(cmd, {
+            'ta_netid': ta_netid,
             'question_id': question_id,
-            'time': time})
+            'time': time
+        })
         self.__con.commit()
 
     def get_help_instance(self, q_id):
@@ -109,7 +117,8 @@ class DBAccess:
         else:
             if res.fetchone() is not None:
                 return None
-        return models.HelpInstance(r1[0], r1[1], r1[2], r1[3], r1[4], r1[5], r1[6], r1[7])
+        return models.HelpInstance(r1[0], r1[1], r1[2], r1[3], r1[4], r1[5],
+                                   r1[6], r1[7])
 
     def get_waiting_help_instances(self, course_id):
         """Fetches all HelpInstances that haven't started being helped
@@ -120,7 +129,9 @@ class DBAccess:
         res = list(self.__con.execute(cmd, {"course_id": course_id}))
         waiting = []
         for row in res:
-            waiting.append(models.HelpInstance(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+            waiting.append(
+                models.HelpInstance(row[0], row[1], row[2], row[3], row[4],
+                                    row[5], row[6], row[7]))
         return waiting
 
     def end_help_instance(self, q_id, end_time):
