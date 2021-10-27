@@ -1,8 +1,3 @@
-"""
-Question:
- - Do we want to use VARCHAR(x) instead of TEXT?
-"""
-
 import sqlite3
 import models
 
@@ -16,7 +11,7 @@ class DBAccess:
         self.__con = sqlite3.connect(_DB_FILE)
 
     def init_db(self):
-        cmd = ("CREATE TABLE IF NOT EXISTS users(" 
+        cmd = ("CREATE TABLE IF NOT EXISTS users("
                " netid TEXT NOT NULL PRIMARY KEY,"
                " name TEXT NOT NULL)")
         self.__con.execute(cmd)
@@ -29,7 +24,7 @@ class DBAccess:
                " enqueue_time TIMESTAMP NOT NULL,"
                " dequeue_time TIMESTAMP,"
                " start_help_time TIMESTAMP,"
-               " ta_netid TEXT)") 
+               " ta_netid TEXT)")
         self.__con.execute(cmd)
         self.__con.commit()
 
@@ -40,7 +35,7 @@ class DBAccess:
         or if two users with that netid exits (should never happen)"""
 
         cmd = "SELECT name FROM users WHERE netid = :netid"
-        res = self.__con.cursor().execute(cmd, {'netid': netid})
+        res = self.__con.execute(cmd, {'netid': netid})
         r1 = res.fetchone()
         if r1 is None:
             return None
@@ -51,12 +46,12 @@ class DBAccess:
 
     def get_help_instance(self, id):
         """Fetches a HelpInstance from the database
-        
+
         Returns None if no such HelpInstance exists
         or if two HelpInstances with the same internal id exist"""
 
         cmd = "SELECT * FROM help_instances WHERE id = :id"
-        res = self.__con.cursor().execute(cmd, {"id": id})
+        res = self.__con.execute(cmd, {"id": id})
         r1 = res.fetchone()
         if r1 is None:
             return None
@@ -67,11 +62,11 @@ class DBAccess:
 
     def get_waiting_help_instances(self, course_id):
         """Fetches all HelpInstances that haven't started being helped
-        
+
         Returns an empty list if no HelpInstances waiting"""
 
         cmd = "SELECT * FROM help_instances WHERE ta_netid IS NULL AND course_id = :course_id"
-        res = list(self.__con.cursor().execute(cmd, {"course_id": course_id}))
+        res = list(self.__con.execute(cmd, {"course_id": course_id}))
         waiting = []
         for row in res:
             waiting.append(models.HelpInstance(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
@@ -79,7 +74,7 @@ class DBAccess:
 
     def end_help_instance(self, id, end_time):
         """Records the dequeue time for a specific HelpInstance
-        
+
         Returns the boolean success of the add"""
 
         cmd = "UPDATE help_instances SET dequeue_time = :dequeue_time WHERE id = :id"

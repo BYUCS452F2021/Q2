@@ -7,9 +7,9 @@ class User:
 
 class HelpInstance:
     """ A representation of when a student gets in line on the queue. """
-    def __init__(self, id, course_id, student_netid, question_text, enqueue_time,
+    def __init__(self, question_id, course_id, student_netid, question_text, enqueue_time,
                  dequeue_time, start_help_time, ta_netid):
-        self.id = id
+        self.id = question_id
         self.course_id = course_id
         self.student_netid = student_netid
         self.question_text = question_text
