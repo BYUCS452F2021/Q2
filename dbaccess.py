@@ -117,8 +117,7 @@ class DBAccess:
         else:
             if res.fetchone() is not None:
                 return None
-        return models.HelpInstance(r1[0], r1[1], r1[2], r1[3], r1[4], r1[5],
-                                   r1[6], r1[7])
+        return models.HelpInstance(*r1)
 
     def get_waiting_help_instances(self, course_id):
         """Fetches all HelpInstances that haven't started being helped
@@ -129,9 +128,7 @@ class DBAccess:
         res = list(self.__con.execute(cmd, {"course_id": course_id}))
         waiting = []
         for row in res:
-            waiting.append(
-                models.HelpInstance(row[0], row[1], row[2], row[3], row[4],
-                                    row[5], row[6], row[7]))
+            waiting.append(models.HelpInstance(*row))
         return waiting
 
     def end_help_instance(self, q_id, end_time):
