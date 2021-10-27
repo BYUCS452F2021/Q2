@@ -29,7 +29,7 @@ def require_json(json_args):
             params = request.get_json()
             try:
                 return func(*[params[arg] for arg in json_args])
-            except KeyError:
+            except KeyError as e:
                 abort(400)
             except EasyHTTPError as httpe:
                 abort(httpe.code)
@@ -73,8 +73,8 @@ def claim_question(q_id, netid, course_id):
 
 @app.route("/get-waiting-questions", methods=['GET', 'POST'])
 @require_json(['netid', 'course_id'])
-def get_waiting_questions(netid, course_id):
-    qs = service.get_waiting_questions(netid, course_id)
+def get_active_questions(netid, course_id):
+    qs = service.get_active_questions(netid, course_id)
     if qs is None:
         raise EasyHTTPError(401)
     return jsonify(qs)

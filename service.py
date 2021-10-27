@@ -59,14 +59,14 @@ def claim_question(question_id, netid, course_id):
             start_help_time = datetime.now()
 
             # Claim question
-            dbaccess.DBAccess.claim_help_instance(question_id, netid,
-                                                  start_help_time)
+            dbaccess.DBAccess().claim_help_instance(question_id, netid,
+                                                    start_help_time)
             return True
 
     return False
 
 
-def get_waiting_questions(netid, course_id):
+def get_active_questions(netid, course_id):
     """Gets all questions that are not yet being helped
 
     Returns a list of questions with their question text, id, enqueue_time, and the asking student's name
@@ -75,7 +75,7 @@ def get_waiting_questions(netid, course_id):
     if not verify_is_ta(netid, course_id):
         return None
 
-    waiting_instances = dbaccess.DBAccess().get_waiting_help_instances(
+    waiting_instances = dbaccess.DBAccess().get_active_help_instances(
         course_id)
 
     waiting_questions_return_info = []
@@ -85,6 +85,7 @@ def get_waiting_questions(netid, course_id):
         info["student_name"] = get_users_name(instance.student_netid)
         info["question_text"] = instance.question_text
         info["enqueue_time"] = instance.enqueue_time
+        info["waiting"] = instance.start_help_time is None
         waiting_questions_return_info.append(info)
 
     return waiting_questions_return_info

@@ -119,12 +119,12 @@ class DBAccess:
                 return None
         return models.HelpInstance(*r1)
 
-    def get_waiting_help_instances(self, course_id):
-        """Fetches all HelpInstances that haven't started being helped
+    def get_active_help_instances(self, course_id):
+        """Fetches all HelpInstances that haven't been finished
 
         Returns an empty list if no HelpInstances waiting"""
 
-        cmd = "SELECT * FROM help_instances WHERE ta_netid IS NULL AND course_id = :course_id"
+        cmd = "SELECT * FROM help_instances WHERE dequeue_time IS NULL AND course_id = :course_id"
         res = list(self.__con.execute(cmd, {"course_id": course_id}))
         waiting = []
         for row in res:
