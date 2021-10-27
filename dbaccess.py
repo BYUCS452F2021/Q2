@@ -75,7 +75,7 @@ class DBAccess:
 
     def add_help_instance(self, netid, course_id, question, enqueue_time):
         """Add a help instance to the database."""
-        cmd = ("INSERT INTO helpInstances (student_netid, course_id, question, enqueue_time)"
+        cmd = ("INSERT INTO help_instances (student_netid, course_id, question, enqueue_time)"
               " VALUES (:student_netid, :course_id, :question, :enqueue_time)")
         res = self.__con.execute(cmd,
             {'student_netid': netid,
@@ -86,7 +86,7 @@ class DBAccess:
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
-        cmd = ("UPDATE helpInstances"
+        cmd = ("UPDATE help_instances"
             " SET ta_netid = :ta_netid, start_help_time = :time"
             " WHERE question_id = :question_id")
         res = self.__con.execute(cmd,
@@ -95,14 +95,14 @@ class DBAccess:
             'time': time})
         self.__con.commit()
 
-    def get_help_instance(self, id):
+    def get_help_instance(self, q_id):
         """Fetches a HelpInstance from the database
 
         Returns None if no such HelpInstance exists
         or if two HelpInstances with the same internal id exist"""
 
-        cmd = "SELECT * FROM help_instances WHERE id = :id"
-        res = self.__con.execute(cmd, {"id": id})
+        cmd = "SELECT * FROM help_instances WHERE question_id = :id"
+        res = self.__con.execute(cmd, {"id": q_id})
         r1 = res.fetchone()
         if r1 is None:
             return None
@@ -123,14 +123,14 @@ class DBAccess:
             waiting.append(models.HelpInstance(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
         return waiting
 
-    def end_help_instance(self, id, end_time):
+    def end_help_instance(self, q_id, end_time):
         """Records the dequeue time for a specific HelpInstance
 
         Returns the boolean success of the add"""
 
-        cmd = "UPDATE help_instances SET dequeue_time = :dequeue_time WHERE id = :id"
+        cmd = "UPDATE help_instances SET dequeue_time = :dequeue_time WHERE question_id = :id"
         cur = self.__con.cursor()
-        cur.execute(cmd, {"dequeue_time": end_time, "id": id})
+        cur.execute(cmd, {"dequeue_time": end_time, "id": q_id})
         self.__con.commit()
 
         return cur.rowcount == 1
