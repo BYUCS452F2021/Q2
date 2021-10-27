@@ -25,7 +25,7 @@ class DBAccess:
         self.__con.commit()
 
         cmd = ("CREATE TABLE IF NOT EXISTS"
-        " helpInstances (question_id TEXT NOT NULL PRIMARY KEY, student_netid TEXT NOT NULL,"
+        " helpInstances (question_id INTEGER NOT NULL PRIMARY KEY, student_netid TEXT NOT NULL,"
         " course_id TEXT NOT NULL, question TEXT NOT NULL, enqueue_time DATETIME NOT NULL,"
         " dequeue_time DATETIME, start_help_time DATETIME, ta_netid TEXT)")
         self.__con.execute(cmd)
