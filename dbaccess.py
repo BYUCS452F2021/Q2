@@ -1,5 +1,7 @@
 import sqlite3
 import models
+import pickle
+import uuid
 
 _DB_FILE = "/users/guest/t/teikn/Q2PROJ/db.sqlite"
 
@@ -77,31 +79,45 @@ class DBAccess:
         })
         self.__con.commit()
 
+    # TODO - determining key?
     def add_help_instance(self, netid, course_id, question, enqueue_time):
         """Add a help instance to the database."""
-        cmd = (
-            "INSERT INTO help_instances (student_netid, course_id, question, enqueue_time)"
-            " VALUES (:student_netid, :course_id, :question, :enqueue_time)")
-        res = self.__con.execute(
-            cmd, {
-                'student_netid': netid,
-                'course_id': course_id,
-                'question': question,
-                'enqueue_time': enqueue_time
-            })
-        self.__con.commit()
+
+        # Create the help id object
+        key = uuid.uuid4().hex
+        current_instance = models.HelpInstance(key, course_id, netid, question, enqueue_time)
+        
+        # Pickle object
+        filename = 'helpinstance'
+        outfile = open(filename,'wb')
+        pickle.dump(current_instance,outfile)
+        outfile.close()
+
+        # Store in database
+        kvdbms.store(key, outfile)
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
-        cmd = ("UPDATE help_instances"
-               " SET ta_netid = :ta_netid, start_help_time = :time"
-               " WHERE question_id = :question_id")
-        res = self.__con.execute(cmd, {
-            'ta_netid': ta_netid,
-            'question_id': question_id,
-            'time': time
-        })
-        self.__con.commit()
+        # Get instance out
+        hi_pkl = kvdbms.get(question_id)
+
+        # Unpickle
+        infile = open(hi_pkl,'rb')
+        current_instance = pickle.load(infile)
+        infile.close()
+
+        # Update
+        current_instance.ta_netid = ta_netid
+        current_instance.start_help_time = time
+
+        # Repickle
+        filename = 'helpinstance'
+        outfile = open(filename,'wb')
+        pickle.dump(current_instance,outfile)
+        outfile.close()
+
+        # Reinsert
+        kvdbms.store(question_id, outfile)
 
     def get_help_instance(self, q_id):
         """Fetches a HelpInstance from the database
