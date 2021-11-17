@@ -94,12 +94,12 @@ class DBAccess:
         outfile.close()
 
         # Store in database
-        kvdbms.store(key, outfile)
+        kvdbms.store("HI:" + key, outfile)
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
         # Get instance out
-        hi_pkl = kvdbms.get(question_id)
+        hi_pkl = kvdbms.get("HI:" + question_id)
 
         # Unpickle
         infile = open(hi_pkl,'rb')
@@ -117,7 +117,7 @@ class DBAccess:
         outfile.close()
 
         # Reinsert
-        kvdbms.store(question_id, outfile)
+        kvdbms.store("HI:" + question_id, outfile)
 
     def get_help_instance(self, q_id):
         """Fetches a HelpInstance from the database
