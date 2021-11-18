@@ -1,5 +1,6 @@
-import sqlite3
+import kvdbms
 import models
+
 import pickle
 import uuid
 
@@ -7,38 +8,6 @@ _DB_FILE = "/users/guest/t/teikn/Q2PROJ/db.sqlite"
 
 
 class DBAccess:
-    __con = sqlite3.connect(_DB_FILE)
-
-    def __init__(self) -> None:
-        self.__con = sqlite3.connect(_DB_FILE)
-
-    def init_db(self):
-        cmd = ("CREATE TABLE IF NOT EXISTS users("
-               " netid TEXT NOT NULL PRIMARY KEY,"
-               " name TEXT NOT NULL)")
-        self.__con.execute(cmd)
-        self.__con.commit()
-
-        cmd = ("CREATE TABLE IF NOT EXISTS help_instances("
-               " question_id INTEGER NOT NULL PRIMARY KEY,"
-               " course_id TEXT NOT NULL,"
-               " student_netid TEXT NOT NULL,"
-               " question TEXT NOT NULL,"
-               " enqueue_time TIMESTAMP NOT NULL,"
-               " dequeue_time TIMESTAMP,"
-               " start_help_time TIMESTAMP,"
-               " ta_netid TEXT)")
-        self.__con.execute(cmd)
-        self.__con.commit()
-
-        cmd = ("CREATE TABLE IF NOT EXISTS roles ("
-               " netid TEXT NOT NULL,"
-               " class_id TEXT NOT NULL,"
-               " role TEXT NOT NULL,"
-               " PRIMARY KEY (netid, class_id) )")
-        self.__con.execute(cmd)
-        self.__con.commit()
-
     def get_user(self, netid):
         """Fetch a user from the database.
 
