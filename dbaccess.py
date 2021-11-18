@@ -85,12 +85,13 @@ class DBAccess:
 
         # Create the help id object
         key = uuid.uuid4().hex
-        current_instance = models.HelpInstance(key, course_id, netid, question, enqueue_time)
-        
+        current_instance = models.HelpInstance(key, course_id, netid, question,
+                                               enqueue_time)
+
         # Pickle object
         filename = 'helpinstance'
-        outfile = open(filename,'wb')
-        pickle.dump(current_instance,outfile)
+        outfile = open(filename, 'wb')
+        pickle.dump(current_instance, outfile)
         outfile.close()
 
         # Store in database
@@ -102,7 +103,7 @@ class DBAccess:
         hi_pkl = kvdbms.get("HI:" + question_id)
 
         # Unpickle
-        infile = open(hi_pkl,'rb')
+        infile = open(hi_pkl, 'rb')
         current_instance = pickle.load(infile)
         infile.close()
 
@@ -112,8 +113,8 @@ class DBAccess:
 
         # Repickle
         filename = 'helpinstance'
-        outfile = open(filename,'wb')
-        pickle.dump(current_instance,outfile)
+        outfile = open(filename, 'wb')
+        pickle.dump(current_instance, outfile)
         outfile.close()
 
         # Reinsert
