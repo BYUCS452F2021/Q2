@@ -3,16 +3,19 @@ import pickle
 
 
 def __key_to_file(key: str):
-    filepath = key.replace(':', '/')
+    filepath = ".kvdbmsstore/" + key.replace(':', '/')
     directory, file = os.path.split(filepath)
     os.makedirs(directory, exist_ok=True)
     return filepath
 
 
 def get(key):
-    file = __key_to_file(key)
-    with open(file, "rb") as f:
-        return pickle.load(f)
+    try:
+        file = __key_to_file(key)
+        with open(file, "rb") as f:
+            return pickle.load(f)
+    except:
+        raise "Invalid key"
 
 
 def store(key, value):
