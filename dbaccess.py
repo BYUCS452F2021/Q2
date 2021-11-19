@@ -75,39 +75,42 @@ class DBAccess:
     def get_help_instance(self, q_id):
         """Fetches a HelpInstance from the database
 
-        Returns None if no such HelpInstance exists
-        or if two HelpInstances with the same internal id exist"""
-
-        cmd = "SELECT * FROM help_instances WHERE question_id = :id"
-        res = self.__con.execute(cmd, {"id": q_id})
-        r1 = res.fetchone()
-        if r1 is None:
+        Returns None if no such HelpInstance exists"""
+       
+        try:
+            help_instance = kvdbms.get("HI:" + q_id)
+            return help_instance
+        except:
             return None
-        else:
-            if res.fetchone() is not None:
-                return None
-        return models.HelpInstance(*r1)
 
     def get_active_help_instances(self, course_id):
         """Fetches all HelpInstances that haven't been finished
 
         Returns an empty list if no HelpInstances waiting"""
 
-        cmd = "SELECT * FROM help_instances WHERE dequeue_time IS NULL AND course_id = :course_id"
-        res = list(self.__con.execute(cmd, {"course_id": course_id}))
-        waiting = []
-        for row in res:
-            waiting.append(models.HelpInstance(*row))
-        return waiting
+        active_ids = kvdbms.get(course_id + ":active")
+
+        active_instances = []
+        for q_id in active_ids:
+            active_instances.append(kvdbms.get("HI:" + q_id))
+
+        return active_instances
 
     def end_help_instance(self, q_id, end_time):
         """Records the dequeue time for a specific HelpInstance
 
         Returns the boolean success of the add"""
 
-        cmd = "UPDATE help_instances SET dequeue_time = :dequeue_time WHERE question_id = :id"
-        cur = self.__con.cursor()
-        cur.execute(cmd, {"dequeue_time": end_time, "id": q_id})
-        self.__con.commit()
+        try:
+            # Fetch stored instance
+            current_instance = kvdbms.get("HI:" + q_id)
 
-        return cur.rowcount == 1
+            # Update
+            current_instance.dequeue_time = end_time
+
+            # Store updated instance
+            kvdbms.store("HI:" + q_id, current_instance)
+
+            return True
+        except:
+            return False
