@@ -57,37 +57,20 @@ class DBAccess:
         current_instance = models.HelpInstance(key, course_id, netid, question,
                                                enqueue_time)
 
-        # Pickle object
-        filename = 'helpinstance'
-        outfile = open(filename, 'wb')
-        pickle.dump(current_instance, outfile)
-        outfile.close()
-
         # Store in database
-        kvdbms.store("HI:" + key, outfile)
+        kvdbms.store("HI:" + key, current_instance)
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
         # Get instance out
-        hi_pkl = kvdbms.get("HI:" + question_id)
-
-        # Unpickle
-        infile = open(hi_pkl, 'rb')
-        current_instance = pickle.load(infile)
-        infile.close()
+        current_instance = kvdbms.get("HI:" + question_id)
 
         # Update
         current_instance.ta_netid = ta_netid
         current_instance.start_help_time = time
 
-        # Repickle
-        filename = 'helpinstance'
-        outfile = open(filename, 'wb')
-        pickle.dump(current_instance, outfile)
-        outfile.close()
-
         # Reinsert
-        kvdbms.store("HI:" + question_id, outfile)
+        kvdbms.store("HI:" + question_id, current_instance)
 
     def get_help_instance(self, q_id):
         """Fetches a HelpInstance from the database
