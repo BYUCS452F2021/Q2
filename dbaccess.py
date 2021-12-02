@@ -29,24 +29,21 @@ class DBAccess:
 
         Returns None if no such role exists"""
 
-        cmd = "SELECT role FROM roles WHERE netid = :netid AND class_id = :class_id"
-        res = self.__con.execute(cmd, {'netid': netid, 'class_id': class_id})
-        r1 = res.fetchone()
-        if r1 is None:
+        key = netid + "." + class_id
+        try:
+            res = kvdbms.get(key)
+            return res
+        except:
             return None
-        return r1[0]
 
     def add_users_role(self, netid, class_id, role):
         """Add a user's role for a course to the database."""
 
-        cmd = ("INSERT INTO roles (netid, class_id, role)"
-               " VALUES (:netid, :class_id, :role)")
-        res = self.__con.execute(cmd, {
-            'netid': netid,
-            'class_id': class_id,
-            'role': role
-        })
-        self.__con.commit()
+        key = netid + "." + class_id
+        try:
+            kvdbms.store(key, role)
+        except:
+            pass
 
     # TODO - determining key?
     def add_help_instance(self, netid, course_id, question, enqueue_time):
