@@ -50,8 +50,13 @@ class DBAccess:
         current_instance = models.HelpInstance(key, course_id, netid, question,
                                                enqueue_time)
 
+        # Add it to active instances
+        actives = self.get_active_help_instances(course_id)
+        actives.append(key)
+
         # Store in database
         kvdbms.store("HI:" + key, current_instance)
+        kvdbms.store(course_id + ":active", actives)
 
     def claim_help_instance(self, question_id, ta_netid, time):
         """ Update a help instance to indicate a TA is now helping the student"""
@@ -95,14 +100,20 @@ class DBAccess:
         Returns the boolean success of the add"""
 
         try:
-            # Fetch stored instance
+            # Fetch stored instance and active instances
             current_instance = kvdbms.get("HI:" + q_id)
+            actives = self.get_active_help_instances(
+                current_instance.course_id)
 
             # Update
             current_instance.dequeue_time = end_time
+            new_actives = [
+                hi for hi in actives if hi.id != current_instance.id
+            ]
 
-            # Store updated instance
+            # Store updated instance and active instances
             kvdbms.store("HI:" + q_id, current_instance)
+            kvdbms.store(current_instance.course_id + ":active", new_actives)
 
             return True
         except:
