@@ -11,18 +11,14 @@ class DBAccess:
     def get_user(self, netid):
         """Fetch a user from the database.
 
-        Returns None if no such user exists,
-        or if two users with that netid exits (should never happen)"""
+        Returns None if no such user exists"""
 
-        cmd = "SELECT name FROM users WHERE netid = :netid"
-        res = self.__con.execute(cmd, {'netid': netid})
-        r1 = res.fetchone()
-        if r1 is None:
+        try:
+            key = ""
+            name = kvdbms.get(key)
+            return models.User(name, netid)
+        except:
             return None
-        else:
-            if res.fetchone() is not None:
-                return None
-        return models.User(r1[0], netid)
 
     def get_users_role(self, netid, class_id):
         """Fetch a user's role for a course from the database.
@@ -73,7 +69,7 @@ class DBAccess:
         """Fetches a HelpInstance from the database
 
         Returns None if no such HelpInstance exists"""
-       
+
         try:
             help_instance = kvdbms.get("HI:" + q_id)
             return help_instance
