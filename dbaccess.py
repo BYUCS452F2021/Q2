@@ -14,7 +14,7 @@ class DBAccess:
         Returns None if no such user exists"""
 
         try:
-            key = ""
+            key = netid
             name = kvdbms.get(key)
             return models.User(name, netid)
         except:
