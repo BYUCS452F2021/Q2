@@ -86,13 +86,16 @@ class DBAccess:
 
         Returns an empty list if no HelpInstances waiting"""
 
-        active_ids = kvdbms.get(course_id + ":active")
+        try:
+            active_ids = kvdbms.get(course_id + ":active")
 
-        active_instances = []
-        for q_id in active_ids:
-            active_instances.append(kvdbms.get("HI:" + q_id))
+            active_instances = []
+            for q_id in active_ids:
+                active_instances.append(kvdbms.get("HI:" + q_id))
 
-        return active_instances
+            return active_instances
+        except:
+            return []
 
     def end_help_instance(self, q_id, end_time):
         """Records the dequeue time for a specific HelpInstance
