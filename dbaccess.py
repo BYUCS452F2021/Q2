@@ -51,7 +51,7 @@ class DBAccess:
                                                enqueue_time)
 
         # Add it to active instances
-        actives = kvdbms.get(course_id + ":active")
+        actives = self.__get_active_help_ids(course_id)
         actives.append(key)
 
         # Store in database
@@ -81,21 +81,28 @@ class DBAccess:
         except:
             return None
 
+    def __get_active_help_ids(self, course_id):
+        """Fetches all HelpInstances IDs that haven't been finished
+
+        Returns an empty list if no HelpInstances waiting"""
+
+        try:
+            return kvdbms.get(course_id + ":active")
+        except:
+            return []
+
     def get_active_help_instances(self, course_id):
         """Fetches all HelpInstances that haven't been finished
 
         Returns an empty list if no HelpInstances waiting"""
 
-        try:
-            active_ids = kvdbms.get(course_id + ":active")
+        active_ids = self.__get_active_help_ids(course_id)
 
-            active_instances = []
-            for q_id in active_ids:
-                active_instances.append(kvdbms.get("HI:" + q_id))
+        active_instances = []
+        for q_id in active_ids:
+            active_instances.append(kvdbms.get("HI:" + q_id))
 
-            return active_instances
-        except:
-            return []
+        return active_instances
 
     def end_help_instance(self, q_id, end_time):
         """Records the dequeue time for a specific HelpInstance
@@ -105,7 +112,7 @@ class DBAccess:
         try:
             # Fetch stored instance and active instances
             current_instance = kvdbms.get("HI:" + q_id)
-            actives = kvdbms.get(current_instance.course_id + ":active")
+            actives = self.__get_active_help_ids(current_instance.course_id)
 
             # Update
             current_instance.dequeue_time = end_time
