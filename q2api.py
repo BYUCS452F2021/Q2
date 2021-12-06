@@ -26,7 +26,13 @@ def require_json(json_args):
     def decorator(func):
         @functools.wraps(func)
         def wrapper():
-            params = request.get_json()
+            try:
+                params = request.get_json()
+                print(params)
+            except:
+                abort(400)
+            if not params:
+                abort(400)
             try:
                 return func(*[params[arg] for arg in json_args])
             except KeyError as e:

@@ -7,7 +7,7 @@ from datetime import datetime
 def get_users_name(netid):
     user = dbaccess.DBAccess().get_user(netid)
     if user is None:
-        name = "Student"
+        name = f"{netid} (student)"
     else:
         name = user.name
 
