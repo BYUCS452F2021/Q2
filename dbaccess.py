@@ -51,7 +51,7 @@ class DBAccess:
                                                enqueue_time)
 
         # Add it to active instances
-        actives = self.get_active_help_instances(course_id)
+        actives = kvdbms.get(course_id + ":active")
         actives.append(key)
 
         # Store in database
@@ -105,14 +105,11 @@ class DBAccess:
         try:
             # Fetch stored instance and active instances
             current_instance = kvdbms.get("HI:" + q_id)
-            actives = self.get_active_help_instances(
-                current_instance.course_id)
+            actives = kvdbms.get(current_instance.course_id + ":active")
 
             # Update
             current_instance.dequeue_time = end_time
-            new_actives = [
-                hi for hi in actives if hi.id != current_instance.id
-            ]
+            new_actives = [hi for hi in actives if hi != current_instance.id]
 
             # Store updated instance and active instances
             kvdbms.store("HI:" + q_id, current_instance)
