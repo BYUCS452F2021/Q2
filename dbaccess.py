@@ -1,7 +1,6 @@
 import kvdbms
 import models
 
-import pickle
 import uuid
 
 _DB_FILE = "/users/guest/t/teikn/Q2PROJ/db.sqlite"
