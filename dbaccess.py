@@ -41,7 +41,6 @@ class DBAccess:
         except:
             pass
 
-    # TODO - determining key?
     def add_help_instance(self, netid, course_id, question, enqueue_time):
         """Add a help instance to the database."""
 
